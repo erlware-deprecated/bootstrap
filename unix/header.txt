@@ -18,8 +18,9 @@ echo "Error executing mkdir, do you have permission?"
 exit 1
 fi
 
+export PREFIX=$(cd $PREFIX; pwd)
 
-echo Untaring into prefix
+echo Untaring into $PREFIX
 
 # Take the TGZ portion of this file and pipe it to tar.
 tail -n +$SKIP $0 | tar xz -C $PREFIX
