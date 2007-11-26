@@ -47,7 +47,7 @@ read PLATFORM_STRING
 echo "Please enter the version for this launcher $"
 read LAUNCHER_VSN
 
-LAUNCHER_FILE=faxien-bootstrap-$PLATFORM_STRING-LAUNCHER_VSN.sh
+LAUNCHER_FILE=faxien-bootstrap-$PLATFORM_STRING-$LAUNCHER_VSN.sh
 cat lheader.txt tmp.tar.gz > $LAUNCHER_FILE
 mv $LAUNCHER_FILE ..
 cd -
