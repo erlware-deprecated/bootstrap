@@ -1,53 +1,81 @@
 #!/bin/sh
 
+or_exit() {
+  if [ "$1" != "0" ];then
+    echo "\$? = $1"
+    echo $2
+    exit $1
+  fi
+}
+
+do_md5() {
+  if exists md5sum; then
+    md5sum | awk '{ print $1 }'
+  elif exists md5; then
+    md5
+  elif exists openssl; then
+    openssl md5
+  else
+    echo "Couldn't find 'md5sum' or 'md5' or 'openssl' in path!" >&2
+    echo "Please add one of these to your path and rerun." >&2
+    exit 1
+  fi
+}
+
+exists() {
+   test -n "`which $1 2> /dev/null`"
+}
+
+
 rm -rf erlware
 
-ERTS_PATH=$(dirname $(dirname $(ls /tmp/erlang/lib/erlang/erts-*/bin/erl)))
+if [ "$1" = "help" ];then
+	echo "$0 [path_to_erlang  launcher_path  suffix]"
+	exit 0
+fi
+
+if [ "$#" = "3" ];then
+
+	ERLANG_PATH=$1
+	LAUNCHER_PATH=$2
+	SUFFIX=$3
+
+else
+
+	echo "Please enter the location of an erlang installation $"
+	read ERLANG_PATH
+	echo "Enter the full path to the faxien_launcher $"
+	read LAUNCHER_PATH
+	echo "Please enter a filename suffix as in (faxien-bootstrap-<suffix>.sh) $"
+	read SUFFIX
+
+fi
+
+ERTS_PATH=$(echo $ERLANG_PATH/erts-*)
 echo "Path to Erts: $ERTS_PATH"
 ERTS_VSN=$(echo $(basename $ERTS_PATH)| sed 's/erts-//g')
 echo "Erts version: $ERTS_VSN"
 
 mkdir erlware
 cd erlware
-wget -O - http://repo.erlware.org/pub/bootstrap/bootstrap.tar.gz | tar -xzv
 mkdir erts
 echo "Copying $ERTS_PATH to erts/$ERTS_VSN"
-cp -r $ERTS_PATH erts/$ERTS_VSN
-rm erts/$ERTS_VSN/bin/dializer
+cp -r $ERTS_PATH erts/$ERTS_VSN; or_exit $? "erts copy failed"
+rm erts/$ERTS_VSN/bin/dialyzer
 rm erts/$ERTS_VSN/bin/erl
+wget -O - http://repo.erlware.org/pub/bootstrap/bootstrap.tar.gz | tar -xzv
 cd -
-
-echo "Enter the full path to the faxien_launcher $"
-read LAUNCHER_PATH
 
 FAXIEN_LAUNCHER=$LAUNCHER_PATH/faxien_launcher
 echo "copy $FAXIEN_LAUNCHER to erlware/bin"
-cp $FAXIEN_LAUNCHER erlware/bin
+cp $FAXIEN_LAUNCHER erlware/bin; or_exit $? "faxien launcher copy failed"
 
 cd erlware
 tar czhf tmp.tar.gz *
 
-echo "Is this bootstrap for mac or linux/unix? [m|l] $"
-read OS
-case $OS in
-    l)
-	sed -e "s/__REPLACE_WITH_MD5_SUM__/`cat tmp.tar.gz | md5sum`/g" ../unix/header.txt > lheader.txt
-         ;;
-    m)
-	sed -e "s/__REPLACE_WITH_MD5_SUM__/`cat tmp.tar.gz | /sbin/md5`/g" ../osx/header.txt > lheader.txt
-         ;;
-    *)
-         echo "$OS is bad input - enter m or l"
-	 exit 1
-         ;;
-esac
+sed -e "s/__REPLACE_WITH_MD5_SUM__/`cat tmp.tar.gz | do_md5`/g" ../header.txt > lheader.txt
 
-echo "Please enter a platform string in for this platform, something like i386-linux $"
-read PLATFORM_STRING
-echo "Please enter the version for this launcher $"
-read LAUNCHER_VSN
-
-LAUNCHER_FILE=faxien-bootstrap-$PLATFORM_STRING-$LAUNCHER_VSN.sh
+LAUNCHER_FILE=faxien-bootstrap-$SUFFIX.sh
 cat lheader.txt tmp.tar.gz > $LAUNCHER_FILE
 mv $LAUNCHER_FILE ..
 cd -
