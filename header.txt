@@ -1,0 +1,68 @@
+#!/bin/sh
+
+do_md5() {
+  if exists md5sum; then
+    md5sum | awk '{ print $1 }'
+  elif exists md5; then
+    md5
+  elif exists openssl; then
+    openssl md5
+  else
+    echo "Couldn't find 'md5sum' or 'md5' or 'openssl' in path!" >&2
+    echo "Please add one of these to your path and rerun." >&2
+    exit 1
+  fi
+}
+
+exists() {
+   test -n "`which $1 2> /dev/null`"
+}
+
+echo "Extracting the erlware bootstrap"
+
+# create a temp directory to extract to.
+export PREFIX="/usr/local/erlware"
+if [ "$1" != "" ]; then
+export PREFIX="$1"
+fi
+
+SKIP=`awk '/^__ARCHIVE_FOLLOWS__/ { print NR + 1; exit 0; }' $0`
+
+echo "Checking MD5 checksum to verify validity"
+ORIGINALMD5SUM="__REPLACE_WITH_MD5_SUM__"
+NEWMD5SUM="`tail -n +$SKIP $0 | do_md5`"
+
+if [ "$ORIGINALMD5SUM" != "$NEWMD5SUM" ]; then
+echo "Installer is corrupt, you may need to try downloading again"
+exit 1
+fi
+
+echo Creating target directory $PREFIX
+
+mkdir -p $PREFIX
+
+if [ $? != 0 ]; then
+echo "Error executing mkdir, do you have permission?"
+exit 1
+fi
+
+export PREFIX=$(cd $PREFIX; pwd)
+
+echo Untaring into $PREFIX
+
+# Take the TGZ portion of this file and pipe it to tar.
+tail -n +$SKIP $0 | tar xz -C $PREFIX
+
+if [ $? != 0 ]; then
+echo "Unable to untar bootstrap"
+exit 1
+fi
+
+echo Upgrading faxien
+
+# execute the installation script
+wait && $PREFIX/bin/faxien_launcher -x faxien -p $PREFIX -e 5.5.5 -t bootstrap.tmpl
+
+exit 0
+
+__ARCHIVE_FOLLOWS__
