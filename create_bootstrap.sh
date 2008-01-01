@@ -1,6 +1,6 @@
 #!/bin/sh
 
-# exit with a nice message on a function failure
+# exit with a nice message on a function failure.
 or_exit() {
   if [ "$1" != "0" ];then
     echo "\$? = $1"
