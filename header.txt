@@ -1,0 +1,41 @@
+#!/bin/sh
+
+echo "Extracting the erlware bootstrap"
+
+# create a temp directory to extract to.
+export PREFIX="/usr/local/erlware"
+if [ "$1" != "" ]; then
+export PREFIX="$1"
+fi
+
+SKIP=`awk '/^__ARCHIVE_FOLLOWS__/ { print NR + 1; exit 0; }' $0`
+
+echo Creating target directory $PREFIX
+
+mkdir -p $PREFIX
+
+if [ $? != 0 ]; then
+echo "Error executing mkdir, do you have permission?"
+exit 1
+fi
+
+export PREFIX=$(cd $PREFIX; pwd)
+
+echo Untaring into $PREFIX
+
+# Take the TGZ portion of this file and pipe it to tar.
+tail -n +$SKIP $0 | tar xz -C $PREFIX
+
+if [ $? != 0 ]; then
+echo "Unable to untar bootstrap"
+exit 1
+fi
+
+echo Upgrading faxien
+
+# execute the installation script
+wait && $PREFIX/bin/faxien upgrade faxien
+
+exit 0
+
+__ARCHIVE_FOLLOWS__
