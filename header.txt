@@ -1,5 +1,9 @@
 #!/bin/sh
 
+echo ""
+echo "Note* This bootstrapper may be executed with a prefix argument."
+echo "example: faxien-bootstrapper-i386-Darwin-Leopard-1.4.sh /home/martinjlogan/erlware"
+echo ""
 
 # create a temp directory to extract to.
 export PREFIX="/usr/local/erlware"
