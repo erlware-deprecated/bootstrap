@@ -1,6 +1,5 @@
 #!/bin/sh
 
-echo "Extracting the erlware bootstrap"
 
 # create a temp directory to extract to.
 export PREFIX="/usr/local/erlware"
@@ -8,8 +7,26 @@ if [ "$1" != "" ]; then
 export PREFIX="$1"
 fi
 
+if [ -e $PREFIX ];then
+  echo "$PREFIX already exists"
+  echo "Would you like to delete it? Answer [y|N] $"
+  read RESP
+
+  case "$RESP" in
+    "y")
+      rm -rf $PREFIX
+      ;;
+    *)
+      echo "exiting faxien bootstrap process"
+      exit 1
+      ;;
+  esac
+
+fi
+
 SKIP=`awk '/^__ARCHIVE_FOLLOWS__/ { print NR + 1; exit 0; }' $0`
 
+echo "Extracting the erlware bootstrap"
 echo Creating target directory $PREFIX
 
 mkdir -p $PREFIX
