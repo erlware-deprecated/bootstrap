@@ -23,9 +23,9 @@ if [ "$#" = "2" ];then
 
 else
 
-	echo "Please enter the location of an erlang installation $"
+	echo "Please enter the location of a working erts-$TARGET_ERTS_VSN as in /usr/local/lib/erlang/erts-5.5.5 $"
 	read ERTS_PATH
-	echo "Please enter a filename suffix as in (faxien-bootstrap-<suffix>.sh) $"
+	echo "Please enter a filename suffix as in (faxien-bootstrap-<suffix>.sh). See the downloads section of faxien for more info $"
 	read SUFFIX
 
 fi
