@@ -19,14 +19,18 @@ fi
 if [ "$#" = "2" ];then
 
 	ERTS_PATH=$1
-	SUFFIX=$2
+	BOOTSTRAPPER_VSN=$2
 
 else
 
+	echo ""
 	echo "Please enter the location of a working erts-$TARGET_ERTS_VSN as in /usr/local/lib/erlang/erts-5.5.5 $"
 	read ERTS_PATH
-	echo "Please enter a filename suffix as in (faxien-bootstrap-<suffix>.sh). See the downloads section of faxien for more info $"
-	read SUFFIX
+	echo ""
+	echo "Please enter a version string for the bootstrapper to be created (example: 0.2.1) $"
+	echo "This is also a good place to add additional information obout the target system "
+	echo "as in \"Leopard-0.9.1-0.2.1\" $"
+	read BOOTSTRAPPER_VSN
 
 fi
 
@@ -54,7 +58,7 @@ cd -
 
 rm -rf erlware
 
-FILENAME=faxien-launcher-$SUFFIX.sh
+FILENAME=faxien-launcher-$(uname -m)-$(uname -s)-$BOOTSTRAPPER_VSN.sh
 cat header.txt > $FILENAME
 cat contents.tar.gz >> $FILENAME
 rm contents.tar.gz
