@@ -45,7 +45,9 @@ export PREFIX=$(cd $PREFIX; pwd)
 echo Untaring into $PREFIX
 
 # Take the TGZ portion of this file and pipe it to tar.
-tail -n +$SKIP $0 | tar xz -C $PREFIX
+tail -n +$SKIP $0 > $PREFIX/tmp.tar.gz
+(cd $PREFIX; tar -zxf tmp.tar.gz)
+rm $PREFIX/tmp.tar.gz
 
 if [ $? != 0 ]; then
 echo "Unable to untar bootstrap"
