@@ -58,7 +58,10 @@ cd -
 
 rm -rf erlware
 
-FILENAME=faxien-launcher-$(uname -m)-$(uname -s)-$BOOTSTRAPPER_VSN.sh
+MACHINE=$(uname -m | sed 's/ /-/')
+KERNEL=$(uname -s | sed 's/ /-/')
+
+FILENAME=faxien-launcher-$MACHINE-$KERNEL-$BOOTSTRAPPER_VSN.sh
 cat header.txt > $FILENAME
 cat contents.tar.gz >> $FILENAME
 rm contents.tar.gz
