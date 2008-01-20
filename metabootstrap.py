@@ -175,7 +175,7 @@ def progress_bar(block_count, block_size, total_bytes):
 
     count = block_count // 10
 
-    progress_length = TERMINAL_SIZE[0] - 6
+    progress_length = max(0, TERMINAL_SIZE[0] - 6)
 
     bytes = block_count * block_size
 
