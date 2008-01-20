@@ -5,6 +5,8 @@ to fetch for your system, download it, and optionally run it."""
 
 import commands, optparse, os, urllib, re, sets, sys
 
+DEFAULT_PREFIX = '/usr/local/erlware'
+
 LISTING_URL = 'http://code.google.com/p/faxien/downloads/list'
 FILE_URL = 'http://faxien.googlecode.com/files'
 
@@ -43,6 +45,33 @@ def terminal_size():                    ### decide on *some* terminal size
         except:
             cr = (25, 80)
     return int(cr[1]), int(cr[0])         # reverse rows, cols
+
+
+def check_prefix(prefix):
+    """Check to make sure we can install to the given prefix."""
+
+    first_existing = prefix
+    while True:
+        if os.path.exists(first_existing):
+            break
+
+        up_one = os.path.dirname(prefix)
+        if up_one == first_existing:
+            raise Exception('wierd. no root path')
+
+        first_existing = up_one
+
+    if not os.path.isdir(first_existing):
+        print >>sys.stderr, '%s is not a directory' % first_existing
+        sys.exit(1)
+
+    if not os.access(first_existing, os.R_OK | os.W_OK | os.X_OK):
+        print >>sys.stderr, 'You do not have permissions to change %s.' % first_existing
+        print >>sys.stderr, 'You must either run this script as another user,'
+        print >>sys.stderr, 'perhaps using "sudo", or install to another prefix.'
+        print >>sys.stderr, 'You can specify an alternate prefix as the first'
+        print >>sys.stderr, 'argument to this script.'
+        sys.exit(1)
 
 
 def get_bootstrappers():
@@ -213,6 +242,16 @@ if __name__ == '__main__':
     if len(args) > 1:
         parser.error('bad arguments')
 
+    prefix = args and os.path.abspath(args[0]) or ''
+
+    if INTERACTIVE and not prefix:
+        prefix = raw_input('Enter the install prefix: [%s] ' % DEFAULT_PREFIX)
+        prefix = prefix or DEFAULT_PREFIX
+
+    print 'Using prefix:', prefix
+
+    check_prefix(prefix)
+
     bootstrappers = get_bootstrappers()
 
     bootstrapper = determine_bootstrapper(options, bootstrappers)
@@ -227,11 +266,6 @@ if __name__ == '__main__':
     if not INTERACTIVE and not options.autorun():
         sys.exit()
 
-    prefix = args and args[0] or None
-
-    if INTERACTIVE and not prefix:
-        prefix = raw_input('Enter the install prefix: [/usr/local/erlware] ')
-
-    command = 'sh %s %s' % (bootfile, prefix or '')
+    command = 'sh %s %s' % (bootfile, prefix)
     print 'Running:', command
     os.system(command)
