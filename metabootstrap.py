@@ -264,6 +264,7 @@ if __name__ == '__main__':
 
     check_prefix(prefix)
 
+    print 'Fetching list of current bootstrappers from %s' % LISTING_URL
     bootstrappers = get_bootstrappers()
 
     bootstrapper = determine_bootstrapper(options, bootstrappers)
