@@ -153,8 +153,13 @@ def determine_bootstrapper(options, bootstrappers):
     matches.sort()
 
     if not matches:
-        print >>sys.stderr, 'No bootstrapper for %s %s' % (options.machine,
-                                                           options.kernel)
+        msg = 'There is no bootstrapper for the architecture "%s"' % options.machine
+        print >>sys.stderr, msg
+        print >>sys.stderr, 'and the operating system "%s".\n' % options.kernel
+        print >>sys.stderr, 'You can see the complete list of available bootstrappers'
+        print >>sys.stderr, 'by running this program with the --choose argument.\n'
+        print >>sys.stderr, 'For help, post to the erlware-questions mailing list:'
+        print >>sys.stderr, '    http://groups.google.com/group/erlware-questions'
         sys.exit(1)
 
     # return the latest bootstrap file
@@ -219,9 +224,16 @@ if __name__ == '__main__':
     usage = """%prog [options] [prefix]
 
     Without options, this script will download the latest version of
-    the faxien bootstrapper for your system and optionally run it.
-    Additional options allow you to override the choice or choose
-    a specific bootstrapper from a list."""
+    the Faxien bootstrapper for your system and optionally run it.
+    Additional options allow you to override the default choice or
+    choose a specific bootstrapper from the list of available ones.
+
+    For more information on Erlware, see http://erlware.org
+
+    For help, contact the erlware-questions mailing list here:
+
+        http://groups.google.com/group/erlware-questions
+    """
 
     parser = optparse.OptionParser(usage=usage)
 
