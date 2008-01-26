@@ -93,6 +93,7 @@ def choose_bootstrapper(bootstrappers):
         sys.exit(1)
 
     while True:
+        print
         print 'Choose a bootstrapper from the list:'
         for i, bootstrapper in enumerate(bootstrappers):
             print ' %d: %s' % (i + 1, bootstrapper)
@@ -110,7 +111,6 @@ def choose_bootstrapper(bootstrappers):
 
         print
         print 'Please enter a number between %d and %d.' % (1, len(bootstrappers))
-        print
 
 
 def determine_bootstrapper(options, bootstrappers):
