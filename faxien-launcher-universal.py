@@ -1,7 +1,15 @@
 #!/usr/bin/env python
 
-"""This Python script will determine what flavor of bootstrapper
-to fetch for your system, download it, and optionally run it."""
+"""
+This Python script will determine what flavor of bootstrapper
+to fetch for your system, download it, and optionally run it.
+
+To use this script, run:
+
+python faxien-launcher-universal.py
+
+in a shell. Adjust the filename to match the one you downloaded.
+"""
 
 import commands, optparse, os, urllib, re, sets, sys
 
