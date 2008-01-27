@@ -13,14 +13,14 @@ fi
 
 if [ -e $PREFIX ];then
   echo "$PREFIX already exists"
-  echo -n "Would you like to delete it? Answer [y|N] $> "
+  echo "Would you like to delete it? Answer [y|N] $> \c"
   read RESP
 
   case "$RESP" in
     "y")
     	echo ""
   	echo "    Are you sure? This will delete your entire previous Erlware install."
-        echo -n "    Please type \"yes\" to continue $> "
+        echo "    Please type \"yes\" to continue $> \c"
   	read SURE_RESP
 	if [ "$SURE_RESP" != "yes" ];then
 	  echo ""
