@@ -17,15 +17,14 @@ if [ "$1" = "help" ];then
 	exit 0
 fi
 
-if [ "$#" = "2" ];then
+if [ "$#" = "1" ];then
 
 	ERTS_PATH=$1
-	BOOTSTRAPPER_VSN=$2
 
 else
 
 	echo ""
-	echo "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> \c" 
+	echo "Please enter a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> \c" 
 	read ERTS_PATH
 
 fi
