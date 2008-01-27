@@ -44,11 +44,10 @@ fi
 
 mkdir erlware
 cd erlware
-mkdir erts
-echo "Copying $ERTS_PATH to erts/$ERTS_VSN"
-cp -r $ERTS_PATH erts/$ERTS_VSN; or_exit $? "erts copy failed"
-rm erts/$ERTS_VSN/bin/dialyzer
-rm erts/$ERTS_VSN/bin/erl
+mkdir erts_packages
+cp -r $ERTS_PATH ./erts_packages/erts-$ERTS_VSN; or_exit $? "erts copy failed"
+rm ./erts_packages/erts-$ERTS_VSN/bin/dialyzer
+rm ./erts_packages/erts-$ERTS_VSN/bin/erl
 cp ../bootstrap.tar.gz .
 tar -zxf bootstrap.tar.gz
 rm bootstrap.tar.gz
