@@ -217,7 +217,7 @@ def download_bootstrapper(bootstrapper):
     bootfile = urllib.urlretrieve(url, bootstrapper, reporthook=progress_bar)[0]
 
     print
-    print 'Done.'
+    print 'Download done.'
 
     return bootfile
 
