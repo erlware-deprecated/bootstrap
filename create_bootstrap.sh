@@ -25,7 +25,7 @@ if [ "$#" = "2" ];then
 else
 
 	echo ""
-	echo -n "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> "
+	echo "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> " 
 	read ERTS_PATH
 
 fi
