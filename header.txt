@@ -61,7 +61,10 @@ wait && $PREFIX/bin/faxien upgrade faxien
 
 if [ $? -eq 0 ]; then
     echo
-    echo Now you may wish to add $PREFIX/bin to your PATH
+    echo Faxien is now installed. You may wish to add $PREFIX/bin to
+    echo your PATH so you can just type \'faxien\' at the command line.
+    echo
+    echo Run \"$PREFIX/bin/faxien help\" to get started.
 fi
 
 exit 0
