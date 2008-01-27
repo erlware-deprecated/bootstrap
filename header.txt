@@ -54,7 +54,9 @@ echo "Unable to untar bootstrap"
 exit 1
 fi
 
-echo Upgrading faxien
+echo ""
+echo "Faxien is now installed"
+echo "Checking repos for any upgrades"
 
 # execute the installation script
 wait && $PREFIX/bin/faxien upgrade faxien
