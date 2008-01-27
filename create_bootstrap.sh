@@ -1,6 +1,7 @@
 #!/bin/sh
 
 TARGET_ERTS_VSN=5.5.5
+CURRENT_BOOTSTRAPPER_VSN="V4"
 
 # exit with a nice message on a function failure.
 or_exit() {
@@ -12,7 +13,7 @@ or_exit() {
 }
 
 if [ "$1" = "help" ];then
-	echo "$0 [path_to_erlang  suffix]"
+	echo "$0 [path_to_erlang]"
 	exit 0
 fi
 
@@ -24,14 +25,19 @@ if [ "$#" = "2" ];then
 else
 
 	echo ""
-	echo "Please enter the location of a working erts-$TARGET_ERTS_VSN as in /usr/local/lib/erlang/erts-5.5.5 $"
+	echo "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> "
 	read ERTS_PATH
 	echo ""
-	echo "Please enter a version string for the bootstrapper to be created (example: 0.2.1) $"
-	echo "This is also a good place to add additional information obout the target system "
-	echo "as in \"Leopard-0.9.1-0.2.1\" $"
-	read BOOTSTRAPPER_VSN
+	echo "Optionally enter additional OS info. For instance an erts package" 
+	echo "compiled for mac os 10.4(Tiger) will not run on 10.5(Leopard) and" 
+	echo "so for a bootstrapper created on Tiger adding \"Tiger\" or \"10.4\"" 
+	echo "here is required if no such condition exists then enter nothing $> "
+	read ADDITIONAL_OS_INFO
 
+fi
+
+if [ "$ERTS_PATH" = "" ];then
+	ERTS_PATH="/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN"
 fi
 
 echo "Path to Erts: $ERTS_PATH"
@@ -60,7 +66,11 @@ rm -rf erlware
 MACHINE=$(uname -m | sed 's/ /-/')
 KERNEL=$(uname -s | sed 's/ /-/')
 
-FILENAME=faxien-launcher-$MACHINE-$KERNEL-$BOOTSTRAPPER_VSN.sh
+FILENAME=faxien-launcher-$MACHINE-$KERNEL-$ADDITIONAL_OS_INFO-$CURRENT_BOOTSTRAPPER_VSN.sh
+if [ "$ADDITIONAL_OS_INFO" = "" ];then
+  FILENAME=faxien-launcher-$MACHINE-$KERNEL-$CURRENT_BOOTSTRAPPER_VSN.sh
+fi
+
 cat header.txt > $FILENAME
 cat contents.tar.gz >> $FILENAME
 rm contents.tar.gz
