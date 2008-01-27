@@ -13,12 +13,23 @@ fi
 
 if [ -e $PREFIX ];then
   echo "$PREFIX already exists"
-  echo "Would you like to delete it? Answer [y|N] $"
+  echo -n "Would you like to delete it? Answer [y|N] $> "
   read RESP
 
   case "$RESP" in
     "y")
-      rm -rf $PREFIX
+    	echo ""
+  	echo "    Are you sure? This will delete your entire previous Erlware install."
+        echo -n "    Please type \"yes\" to continue $> "
+  	read SURE_RESP
+	if [ "$SURE_RESP" != "yes" ];then
+	  echo ""
+	  echo "Keeping previous install, and aborting bootstrap."
+	  exit 0
+	fi
+	  echo ""
+	  echo "Removing previous install"
+      	  rm -rf $PREFIX
       ;;
     *)
       echo "exiting faxien bootstrap process"
@@ -55,7 +66,8 @@ exit 1
 fi
 
 echo ""
-echo "Faxien is now installed"
+echo "*** Faxien is now installed ***"
+echo ""
 echo "Checking repos for any upgrades"
 
 # execute the installation script
