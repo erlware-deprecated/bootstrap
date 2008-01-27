@@ -25,13 +25,13 @@ if [ "$#" = "2" ];then
 else
 
 	echo ""
-	echo "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> "
+	echo -n "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> "
 	read ERTS_PATH
 	echo ""
 	echo "Optionally enter additional OS info. For instance an erts package" 
 	echo "compiled for mac os 10.4(Tiger) will not run on 10.5(Leopard) and" 
 	echo "so for a bootstrapper created on Tiger adding \"Tiger\" or \"10.4\"" 
-	echo "here is required if no such condition exists then enter nothing $> "
+	echo -n "here is required if no such condition exists then enter nothing $> "
 	read ADDITIONAL_OS_INFO
 
 fi
