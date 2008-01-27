@@ -210,7 +210,9 @@ def download_bootstrapper(bootstrapper):
     url = '%s/%s' % (FILE_URL, bootstrapper)
 
     print 'Downloading %s' % url
-    sys.stdout.write(SPINNER[0] + '    %')
+
+    if INTERACTIVE:
+        sys.stdout.write(SPINNER[0] + '    %')
 
     bootfile = urllib.urlretrieve(url, bootstrapper, reporthook=progress_bar)[0]
 
