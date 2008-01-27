@@ -27,12 +27,6 @@ else
 	echo ""
 	echo -n "Please a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> "
 	read ERTS_PATH
-	echo ""
-	echo "Optionally enter additional OS info. For instance an erts package" 
-	echo "compiled for mac os 10.4(Tiger) will not run on 10.5(Leopard) and" 
-	echo "so for a bootstrapper created on Tiger adding \"Tiger\" or \"10.4\"" 
-	echo -n "here is required if no such condition exists then enter nothing $> "
-	read ADDITIONAL_OS_INFO
 
 fi
 
@@ -66,10 +60,8 @@ rm -rf erlware
 MACHINE=$(uname -m | sed 's/ /-/')
 KERNEL=$(uname -s | sed 's/ /-/')
 
-FILENAME=faxien-launcher-$MACHINE-$KERNEL-$ADDITIONAL_OS_INFO-$CURRENT_BOOTSTRAPPER_VSN.sh
-if [ "$ADDITIONAL_OS_INFO" = "" ];then
-  FILENAME=faxien-launcher-$MACHINE-$KERNEL-$CURRENT_BOOTSTRAPPER_VSN.sh
-fi
+KERNEL_VSN=$(uname -r | sed -e 's;-.*;;')
+FILENAME=faxien-launcher-$MACHINE-$KERNEL-$KERNEL_VSN-$CURRENT_BOOTSTRAPPER_VSN.sh
 
 cat header.txt > $FILENAME
 cat contents.tar.gz >> $FILENAME
