@@ -260,8 +260,8 @@ if __name__ == '__main__':
 
     if INTERACTIVE and not prefix:
         prefix = raw_input('Enter the install prefix: [%s] ' % DEFAULT_PREFIX)
-        prefix = prefix or DEFAULT_PREFIX
 
+    prefix = prefix or DEFAULT_PREFIX
     prefix = os.path.expanduser(prefix)
 
     print 'Using prefix:', prefix
