@@ -280,7 +280,7 @@ if __name__ == '__main__':
         if ans.lower() not in ('', 'y'):
             sys.exit()
 
-    if not INTERACTIVE and not options.autorun():
+    if not INTERACTIVE and not options.autorun:
         sys.exit()
 
     command = 'sh %s %s' % (bootfile, prefix)
