@@ -172,7 +172,7 @@ def determine_bootstrapper(options, bootstrappers):
 
     # exclude os versions later than ours
     matches = [(boot_version, os_version, b) for boot_version, os_version, b in matches
-               if os_version <= options.os_version]
+               if os_version[:2] <= options.os_version[:2]]
 
     # latest version will be last after sort
     matches.sort()
