@@ -182,7 +182,11 @@ def determine_bootstrapper(options, bootstrappers):
 
     msg = 'There is no bootstrapper for the architecture "%s"' % options.machine
     print >>sys.stderr, msg
-    print >>sys.stderr, 'and the operating system "%s".\n' % options.kernel
+
+    msg = 'and the operating system "%s (%s)".\n'
+    msg %= (options.kernel, '.'.join([str(n) for n in options.os_version[:2]]))
+    print >>sys.stderr, msg
+
     print >>sys.stderr, 'You can see the complete list of available bootstrappers'
     print >>sys.stderr, 'by running this program with the --choose argument.\n'
     print >>sys.stderr, 'For help, post to the erlware-questions mailing list:'
