@@ -126,6 +126,18 @@ def determine_bootstrapper(options, bootstrappers):
     if options.choose:
         return choose_bootstrapper(bootstrappers)
 
+    if not options.os_version:
+        if (options.machine, options.kernel) == (None, None):
+            status, output = commands.getstatusoutput('uname -r')
+            if status != 0:
+                print 'Cannot determine os version.'
+                sys.exit(1)
+            options.os_version = output
+        else:
+            options.os_version = ''
+
+    options.os_version = tuple(map(int, options.os_version.split('-')[0].split('.')))
+
     if not options.machine:
         status, output = commands.getstatusoutput('uname -m')
         if status != 0:
@@ -157,6 +169,10 @@ def determine_bootstrapper(options, bootstrappers):
     # tupleize them for sorting
     matches = [(int(boot_version), tuple([int(n) for n in os_version.split('.')]), b)
                for boot_version, os_version, b in matches]
+
+    # exclude os versions later than ours
+    matches = [(boot_version, os_version, b) for boot_version, os_version, b in matches
+               if os_version <= options.os_version]
 
     # latest version will be last after sort
     matches.sort()
@@ -258,6 +274,9 @@ if __name__ == '__main__':
 
     help = 'the name of the kernel you are running. By default, the output of "uname -s"'
     parser.add_option("-k", "--kernel", dest="kernel", help=help)
+
+    help = 'the version of the kernel you are running. By default, the output of "uname -r", excluding everything after and including the first "-" character.'
+    parser.add_option("-o", "--os-version", dest="os_version", help=help)
 
     options, args = parser.parse_args()
 
