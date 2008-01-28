@@ -23,8 +23,8 @@ INTERACTIVE = os.isatty(sys.stdin.fileno())
 # re to find the filenames
 scraper = re.compile(r'_go\(\'detail\?name=(faxien-launcher[^&]*)')
 
-# re to find version num in filenames
-verpat = re.compile(r'-((\d+.)+)sh')
+# re to find version numbers in filenames. looking for x.x.x-Vx
+verpat = re.compile(r'-((?:\d+\.)*\d+)-V(\d+).sh')
 
 
 # ioctl_GWINSZ and terminal_size are from Chuck Blake's cls.py
@@ -152,26 +152,26 @@ def determine_bootstrapper(options, bootstrappers):
     matches = [(verpat.search(b), b) for b in matches]
 
     # grab the version numbers, cull filenames with no matches
-    matches = [(m.group(1)[:-1], b) for m, b in matches if m]
+    matches = [(m.group(2), m.group(1), b) for m, b in matches if m]
 
     # tupleize them for sorting
-    matches = [(tuple([int(n) for n in vernum.split('.')]), b) for vernum, b in matches]
+    matches = [(int(boot_version), tuple([int(n) for n in os_version.split('.')]), b)
+               for boot_version, os_version, b in matches]
 
     # latest version will be last after sort
     matches.sort()
 
-    if not matches:
-        msg = 'There is no bootstrapper for the architecture "%s"' % options.machine
-        print >>sys.stderr, msg
-        print >>sys.stderr, 'and the operating system "%s".\n' % options.kernel
-        print >>sys.stderr, 'You can see the complete list of available bootstrappers'
-        print >>sys.stderr, 'by running this program with the --choose argument.\n'
-        print >>sys.stderr, 'For help, post to the erlware-questions mailing list:'
-        print >>sys.stderr, '    http://groups.google.com/group/erlware-questions'
-        sys.exit(1)
+    if matches:
+        return matches[-1][-1]
 
-    # return the latest bootstrap file
-    return matches[-1][1]
+    msg = 'There is no bootstrapper for the architecture "%s"' % options.machine
+    print >>sys.stderr, msg
+    print >>sys.stderr, 'and the operating system "%s".\n' % options.kernel
+    print >>sys.stderr, 'You can see the complete list of available bootstrappers'
+    print >>sys.stderr, 'by running this program with the --choose argument.\n'
+    print >>sys.stderr, 'For help, post to the erlware-questions mailing list:'
+    print >>sys.stderr, '    http://groups.google.com/group/erlware-questions'
+    sys.exit(1)
 
 
 SPINNER = "-\|/"
