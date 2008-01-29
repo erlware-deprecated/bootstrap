@@ -172,7 +172,7 @@ def determine_bootstrapper(options, bootstrappers):
 
     # exclude os versions later than ours
     matches = [(boot_version, os_version, b) for boot_version, os_version, b in matches
-               if os_version[:2] <= options.os_version[:2]]
+               if os_version <= options.os_version]
 
     # latest version will be last after sort
     matches.sort()
@@ -184,7 +184,7 @@ def determine_bootstrapper(options, bootstrappers):
     print >>sys.stderr, msg
 
     msg = 'and the operating system "%s (%s)".\n'
-    msg %= (options.kernel, '.'.join([str(n) for n in options.os_version[:2]]))
+    msg %= (options.kernel, '.'.join([str(n) for n in options.os_version]))
     print >>sys.stderr, msg
 
     print >>sys.stderr, 'You can see the complete list of available bootstrappers'
