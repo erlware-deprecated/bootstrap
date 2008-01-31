@@ -23,8 +23,9 @@ INTERACTIVE = os.isatty(sys.stdin.fileno())
 # re to find the filenames
 scraper = re.compile(r'_go\(\'detail\?name=(faxien-launcher[^&]*)')
 
-# re to find version numbers in filenames. looking for x.x.x-Vx
-verpat = re.compile(r'-((?:\d+\.)*\d+)-V(\d+).sh')
+# re to find version numbers in filenames.
+# looking for x.x.x-Vx, but the first part is optional
+verpat = re.compile(r'-(?:((?:\d+\.)*\d+)-)?V(\d+).sh')
 
 
 # ioctl_GWINSZ and terminal_size are from Chuck Blake's cls.py
@@ -121,6 +122,13 @@ def choose_bootstrapper(bootstrappers):
         print 'Please enter a number between %d and %d.' % (1, len(bootstrappers))
 
 
+def make_version_tuple(input):
+    """Turn a non-empty version string into a tuple of integers."""
+    if not input:
+        return ()
+    return tuple([int(n) for n in input.split('.')])
+
+
 def determine_bootstrapper(options, bootstrappers):
     """Determine which bootstrapper to use based on the options."""
     if options.choose:
@@ -133,10 +141,8 @@ def determine_bootstrapper(options, bootstrappers):
                 print 'Cannot determine os version.'
                 sys.exit(1)
             options.os_version = output
-        else:
-            options.os_version = ''
 
-    options.os_version = tuple(map(int, options.os_version.split('-')[0].split('.')))
+    options.os_version = make_version_tuple(options.os_version)
 
     if not options.machine:
         status, output = commands.getstatusoutput('uname -m')
@@ -167,7 +173,7 @@ def determine_bootstrapper(options, bootstrappers):
     matches = [(m.group(2), m.group(1), b) for m, b in matches if m]
 
     # tupleize them for sorting
-    matches = [(int(boot_version), tuple([int(n) for n in os_version.split('.')]), b)
+    matches = [(int(boot_version), make_version_tuple(os_version), b)
                for boot_version, os_version, b in matches]
 
     # exclude os versions later than ours
