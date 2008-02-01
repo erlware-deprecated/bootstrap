@@ -312,14 +312,17 @@ if __name__ == '__main__':
 
     bootfile = download_bootstrapper(bootstrapper)
 
+    command = 'sh %s %s' % (bootfile, prefix)
+
     if INTERACTIVE and not options.autorun:
         ans = raw_input('Do you want to run the bootstrapper now? ([y]/n) ')
         if ans.lower() not in ('', 'y'):
+            print "To run the bootstrapper yourself, use this command:"
+            print command
             sys.exit()
 
     if not INTERACTIVE and not options.autorun:
         sys.exit()
 
-    command = 'sh %s %s' % (bootfile, prefix)
     print 'Running:', command
     os.system(command)
