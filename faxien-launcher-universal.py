@@ -140,7 +140,7 @@ def determine_bootstrapper(options, bootstrappers):
             if status != 0:
                 print 'Cannot determine os version.'
                 sys.exit(1)
-            options.os_version = output
+            options.os_version = output.split('-')[0]
 
     options.os_version = make_version_tuple(options.os_version)
 
