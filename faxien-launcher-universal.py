@@ -60,11 +60,12 @@ def check_prefix(prefix):
     """Check to make sure we can install to the given prefix."""
 
     first_existing = prefix
+
     while True:
         if os.path.exists(first_existing):
             break
 
-        up_one = os.path.dirname(prefix)
+        up_one = os.path.dirname(first_existing)
         if up_one == first_existing:
             raise Exception('wierd. no root path')
 
