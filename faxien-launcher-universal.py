@@ -67,7 +67,7 @@ def check_prefix(prefix):
 
         up_one = os.path.dirname(first_existing)
         if up_one == first_existing:
-            raise Exception('wierd. no root path')
+            raise Exception('weird. no root path')
 
         first_existing = up_one
 
