@@ -294,13 +294,13 @@ if __name__ == '__main__':
     if len(args) > 1:
         parser.error('bad arguments')
 
-    prefix = args and os.path.abspath(args[0]) or ''
+    prefix = args and args[0] or ''
 
     if INTERACTIVE and not prefix:
         prefix = raw_input('Enter the install prefix: [%s] ' % DEFAULT_PREFIX)
 
     prefix = prefix or DEFAULT_PREFIX
-    prefix = os.path.expanduser(prefix)
+    prefix = os.path.abspath(os.path.expanduser(prefix))
 
     print 'Using prefix:', prefix
 
