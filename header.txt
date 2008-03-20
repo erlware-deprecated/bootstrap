@@ -3,7 +3,11 @@
 # create a directory to extract to.
 export PREFIX="/usr/local/erlware"
 if [ "$1" != "" ]; then
-export PREFIX="$1"
+  if [ "`basename $1`" = "erlware" ]; then
+    export PREFIX="$1"
+  else 
+    export PREFIX="$1/erlware"
+  fi
 else
   echo ""
   echo "Note* This bootstrapper may be executed with a prefix argument."
