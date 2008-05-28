@@ -75,7 +75,7 @@ echo ""
 echo "Checking repos for any upgrades"
 
 # execute the installation script
-wait && $PREFIX/bin/faxien upgrade faxien
+wait && $PREFIX/bin/faxien upgrade-release faxien
 
 if [ $? -eq 0 ]; then
     echo
