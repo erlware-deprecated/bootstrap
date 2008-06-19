@@ -13,6 +13,8 @@ in a shell. Adjust the filename to match the one you downloaded.
 
 import commands, optparse, os, urllib, re, sets, sys
 
+VERSION = '0.3.4'
+
 DEFAULT_PREFIX = '/usr/local/erlware'
 
 LISTING_URL = 'http://code.google.com/p/faxien/downloads/list'
@@ -236,6 +238,24 @@ def progress_bar(block_count, block_size, total_bytes):
     sys.stdout.flush()
 
 
+def already_downloaded(bootstrapper):
+    """Return True if the given bootstrap file has already been downloaded."""
+    if not os.path.exists(bootstrapper):
+        return False
+
+    url = '%s/%s' % (FILE_URL, bootstrapper)
+
+    content_length = urllib.urlopen(url).info().getheader('Content-Length')
+    if not content_length or not content_length.isdigit():
+        return False
+
+    content_length = int(content_length)
+
+    current_size = os.stat(bootstrapper).st_size
+
+    return content_length == current_size
+
+
 def download_bootstrapper(bootstrapper):
     """Fetch the given bootstrap file from the website. Return the file location."""
     global TERMINAL_SIZE
@@ -249,12 +269,10 @@ def download_bootstrapper(bootstrapper):
     if INTERACTIVE:
         sys.stdout.write(SPINNER[0] + '    %')
 
-    bootfile = urllib.urlretrieve(url, bootstrapper, reporthook=progress_bar)[0]
+    urllib.urlretrieve(url, bootstrapper, reporthook=progress_bar)[0]
 
     print
     print 'Download done.'
-
-    return bootfile
 
 
 if __name__ == '__main__':
@@ -289,10 +307,17 @@ if __name__ == '__main__':
     help = 'the version of the kernel you are running. By default, the output of "uname -r", excluding everything after and including the first "-" character.'
     parser.add_option("-o", "--os-version", dest="os_version", help=help)
 
+    help = 'print version information for the universal bootstrapper'
+    parser.add_option("-v", "--version", action='store_true', help=help)
+
     options, args = parser.parse_args()
 
     if len(args) > 1:
         parser.error('bad arguments')
+
+    if options.version:
+        print 'Faxien universal bootstrapper version %s.' % VERSION
+        sys.exit()
 
     prefix = args and args[0] or ''
 
@@ -311,9 +336,12 @@ if __name__ == '__main__':
 
     bootstrapper = determine_bootstrapper(options, bootstrappers)
 
-    bootfile = download_bootstrapper(bootstrapper)
+    if already_downloaded(bootstrapper):
+        print 'Already downloaded', bootstrapper
+    else:
+        download_bootstrapper(bootstrapper)
 
-    command = 'sh %s %s' % (bootfile, prefix)
+    command = 'sh %s %s' % (bootstrapper, prefix)
 
     if INTERACTIVE and not options.autorun:
         ans = raw_input('Do you want to run the bootstrapper now? ([y]/n) ')
