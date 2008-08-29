@@ -1,7 +1,7 @@
 #!/bin/sh
 
-TARGET_ERTS_VSN=5.6.2
-CURRENT_BOOTSTRAPPER_VSN="V5"
+TARGET_ERTS_VSN=5.6.3
+CURRENT_BOOTSTRAPPER_VSN="V6"
 
 # exit with a nice message on a function failure.
 or_exit() {
@@ -43,13 +43,13 @@ fi
 
 mkdir erlware
 cd erlware
-mkdir erts_packages
-cp -r $ERTS_PATH ./erts_packages/erts-$ERTS_VSN; or_exit $? "erts copy failed"
-rm ./erts_packages/erts-$ERTS_VSN/bin/dialyzer
-rm ./erts_packages/erts-$ERTS_VSN/bin/erl
 cp ../bootstrap.tar.gz .
 tar -zxf bootstrap.tar.gz
 rm bootstrap.tar.gz
+INSTALLED_ERTS_PATH="./packages/$ERTS_VSN/erts-$ERTS_VSN"
+cp -r $ERTS_PATH $INSTALLED_ERTS_PATH; or_exit $? "erts copy failed"
+rm $INSTALLED_ERTS_PATH/bin/dialyzer
+rm $INSTALLED_ERTS_PATH/bin/erl
 tar -zcf contents.tar.gz *
 mv contents.tar.gz ..
 cd -
