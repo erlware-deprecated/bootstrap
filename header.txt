@@ -1,7 +1,7 @@
 #!/bin/sh
 
 # create a directory to extract to.
-export PREFIX="/usr/local/erlware"
+export PREFIX="/usr/local/lib/erlang"
 if [ "$1" != "" ]; then
   if [ "`basename $1`" = "erlware" ]; then
     export PREFIX="$1"
@@ -16,12 +16,17 @@ else
 fi
 
 if [ -e $PREFIX ];then
-  echo "$PREFIX already exists"
-  echo "Would you like to delete it? Answer [y|N] $> \c"
+  echo "*** $PREFIX already exists ***"
+  echo "Would you like to:"
+  echo "1. (d)elete and reinstall $PREFIX" 
+  echo "2. (k)eep the directory and install along side what exists within it (Recommended)"
+  echo "3. (a)bort the boostrap process"
+  echo ""
+  echo "Answer [d|k|a] $> \c"
   read RESP
 
   case "$RESP" in
-    "y")
+    "d")
     	echo ""
   	echo "    Are you sure? This will delete your entire previous Erlware install."
         echo "    Please type \"yes\" to continue $> \c"
@@ -34,6 +39,9 @@ if [ -e $PREFIX ];then
 	  echo ""
 	  echo "Removing previous install"
       	  rm -rf $PREFIX
+      ;;
+    "k")
+      echo "Keeping old install"
       ;;
     *)
       echo "exiting faxien bootstrap process"
