@@ -1,7 +1,7 @@
 #!/bin/sh
 
 TARGET_ERTS_VSN=5.7.1
-CURRENT_BOOTSTRAPPER_VSN="V8"
+CURRENT_BOOTSTRAPPER_VSN="V9"
 
 # exit with a nice message on a function failure.
 or_exit() {
