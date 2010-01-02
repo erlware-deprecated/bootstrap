@@ -3,26 +3,17 @@
 # create a directory to extract to.
 export PREFIX="/usr/local/lib/erlang"
 if [ "$1" != "" ]; then
-  if [ "`basename $1`" = "erlware" ]; then
     export PREFIX="$1"
-  else 
-    export PREFIX="$1/erlware"
-  fi
-else
-  echo ""
-  echo "Note* This bootstrapper may be executed with a prefix argument."
-  echo "example: faxien-bootstrapper-i386-Darwin-Leopard-1.4.sh /home/martinjlogan/erlware"
-  echo ""
 fi
 
 if [ -e $PREFIX ];then
   echo "*** $PREFIX already exists ***"
   echo "Would you like to:"
-  echo "1. (d)elete and reinstall $PREFIX" 
-  echo "2. (k)eep the directory and install along side what exists within it (Recommended)"
+  echo "1. (k)eep the directory and install along side what exists within it (Recommended)"
+  echo "2. (d)elete and reinstall $PREFIX" 
   echo "3. (a)bort the boostrap process"
   echo ""
-  echo "Answer [d|k|a] $> \c"
+  echo "Answer [k|d|a] $> \c"
   read RESP
 
   case "$RESP" in
@@ -40,12 +31,12 @@ if [ -e $PREFIX ];then
 	  echo "Removing previous install"
       	  rm -rf $PREFIX
       ;;
-    "k")
-      echo "Keeping old install"
+    "a")
+      echo "Aborting the Faxien bootstrap process"
+      exit 1
       ;;
     *)
-      echo "exiting faxien bootstrap process"
-      exit 1
+      echo "Keeping old install and installing along side it"
       ;;
   esac
 
