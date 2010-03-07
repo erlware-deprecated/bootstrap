@@ -58,6 +58,20 @@ def terminal_size():                    ### decide on *some* terminal size
     return int(cr[1]), int(cr[0])         # reverse rows, cols
 
 
+def get_prefix(args):
+    """Get the prefix to use for installation."""
+
+    prefix = args and args[0] or ''
+
+    if INTERACTIVE and not prefix:
+        prefix = raw_input('Enter the install prefix: [%s] ' % DEFAULT_PREFIX)
+
+    prefix = prefix or DEFAULT_PREFIX
+    prefix = os.path.abspath(os.path.expanduser(prefix))
+
+    return prefix
+
+
 def check_prefix(prefix):
     """Check to make sure we can install to the given prefix."""
 
@@ -319,13 +333,7 @@ if __name__ == '__main__':
         print 'Faxien universal bootstrapper version %s.' % VERSION
         sys.exit()
 
-    prefix = args and args[0] or ''
-
-    if INTERACTIVE and not prefix:
-        prefix = raw_input('Enter the install prefix: [%s] ' % DEFAULT_PREFIX)
-
-    prefix = prefix or DEFAULT_PREFIX
-    prefix = os.path.abspath(os.path.expanduser(prefix))
+    prefix = get_prefix(args)
 
     print 'Using prefix:', prefix
 
