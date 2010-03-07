@@ -11,7 +11,7 @@ python faxien-launcher-universal.py
 in a shell. Adjust the filename to match the one you downloaded.
 """
 
-import commands, optparse, os, urllib, re, sets, sys
+import commands, optparse, os, urllib, re, sets, subprocess, sys, tempfile
 
 VERSION = '0.3.5'
 
@@ -28,6 +28,12 @@ scraper = re.compile(r'_go\(\'detail\?name=(faxien-launcher[^&]*)')
 # re to find version numbers in filenames.
 # looking for x.x.x-Vx, but the first part is optional
 verpat = re.compile(r'-(?:((?:\d+\.)*\d+)-)?V(\d+).sh')
+
+OTP_BASE_ESCRIPT = """\
+# escript seems to want this line
+main([]) ->
+    io:format("~s", [filename:dirname(code:lib_dir())]).
+"""
 
 
 # ioctl_GWINSZ and terminal_size are from Chuck Blake's cls.py
@@ -58,15 +64,52 @@ def terminal_size():                    ### decide on *some* terminal size
     return int(cr[1]), int(cr[0])         # reverse rows, cols
 
 
+def get_otp_base():
+    """Get the base directory of the default OTP installation or None."""
+
+    fd, script = tempfile.mkstemp(suffix='.erl')
+    os.write(fd, OTP_BASE_ESCRIPT)
+    os.close(fd)
+
+    try:
+        p = subprocess.Popen(['escript', script],
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.PIPE)
+    except OSError:
+        os.remove(script)
+        return None
+
+    output, _ = p.communicate()
+
+    os.remove(script)
+
+    if p.returncode != 0:
+        return None
+
+    return output
+
+
 def get_prefix(args):
     """Get the prefix to use for installation."""
 
     prefix = args and args[0] or ''
 
-    if INTERACTIVE and not prefix:
-        prefix = raw_input('Enter the install prefix: [%s] ' % DEFAULT_PREFIX)
+    default_prefix = DEFAULT_PREFIX
 
-    prefix = prefix or DEFAULT_PREFIX
+    if INTERACTIVE and not prefix:
+        otp_base = get_otp_base()
+
+        if otp_base is not None:
+            msg = 'Install to existing Erlang/OTP? (%s) [Y/n] '
+            ans = raw_input(msg % otp_base)
+            if ans in ('', 'Y', 'y', 'yes'):
+                prefix = otp_base
+
+        if not prefix:
+            msg = 'Enter the install prefix: [%s] '
+            prefix = raw_input(msg % default_prefix)
+
+    prefix = prefix or default_prefix
     prefix = os.path.abspath(os.path.expanduser(prefix))
 
     return prefix
