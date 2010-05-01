@@ -13,7 +13,7 @@ in a shell. Adjust the filename to match the one you downloaded.
 
 import commands, optparse, os, urllib, re, subprocess, sys, tempfile
 
-VERSION = '0.3.6'
+VERSION = '0.3.7'
 
 DEFAULT_PREFIX = '/usr/local/lib/erlang'
 
