@@ -11,7 +11,7 @@ python faxien-launcher-universal.py
 in a shell. Adjust the filename to match the one you downloaded.
 """
 
-import commands, optparse, os, urllib, re, sets, subprocess, sys, tempfile
+import commands, optparse, os, urllib, re, subprocess, sys, tempfile
 
 VERSION = '0.3.6'
 
@@ -148,7 +148,7 @@ def get_bootstrappers():
 
     page = urllib.urlopen(LISTING_URL).read()
 
-    bootstrappers = list(sets.Set(scraper.findall(page)))
+    bootstrappers = list(set(scraper.findall(page)))
     bootstrappers.sort()
     return bootstrappers
 
