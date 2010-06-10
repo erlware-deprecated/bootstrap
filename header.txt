@@ -2,11 +2,24 @@
 
 # create a directory to extract to.
 export PREFIX="/usr/local/lib/erlang"
-if [ "$1" != "" ]; then
-    export PREFIX="$1"
+if [ $1 = "force" ];then
+	FORCE="true"
+	if [ "$2" != "" ]; then
+		export PREFIX="$2"
+	fi
+elif [ "$2" = "force" ]; then
+	FORCE="true"
+    	export PREFIX="$1"
+elif [ "$1" != "" ]; then
+	FORCE="false"
+    	export PREFIX="$1"
 fi
 
-if [ -e $PREFIX ];then
+
+if [ $FORCE = "true" ];then
+	echo "forcing install - deleting any existing installs"
+      	rm -rf $PREFIX
+elif [ -e $PREFIX ];then
   echo "*** $PREFIX already exists ***"
   echo "Would you like to:"
   echo "1. (k)eep the directory and install along side what exists within it (Recommended)"

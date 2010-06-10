@@ -20,9 +20,7 @@ fi
 if [ "$#" = "1" ];then
 
 	ERTS_PATH=$1
-
 else
-
 	echo ""
 	echo "Please enter a path to erts. [/usr/local/lib/erlang/erts-$TARGET_ERTS_VSN] $> \c" 
 	read ERTS_PATH
