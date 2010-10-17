@@ -11,7 +11,7 @@ fi
 ROOT_DIR=/usr/local/lib/erlang
 if [ $# == 1 ]; then
 	ROOT_DIR=$1
-	echo "installing faxien into alternate erlang $ROOT_DIR"
+	echo "Installing faxien into alternate Erlang root dir at: $ROOT_DIR"
 elif [ -e $ROOT_DIR ]; then
 	echo "Erlang is installed at $ROOT_DIR. Installing here"
 else

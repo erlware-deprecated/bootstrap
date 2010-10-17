@@ -1,7 +1,7 @@
 #!/bin/sh
 
 VSN="V1"
-FILENAME=faxien-launcher-$VSN.sh
+FILENAME=faxien-piggyback-launcher-$VSN.sh
 
 cat header.txt > $FILENAME
 cat faxien.tar.gz >> $FILENAME
