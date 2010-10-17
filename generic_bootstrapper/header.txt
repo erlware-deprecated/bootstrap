@@ -1,0 +1,89 @@
+#!/bin/sh
+
+SKIP=`awk '/^__ARCHIVE_FOLLOWS__/ { print NR + 1; exit 0; }' $0`
+
+which erl
+if [ $? != 0 ]; then
+	echo "Can't find erl. Please make sure you have Erlang installed. See erlang.org for this"
+	exit 1
+fi
+
+ROOT_DIR=/usr/local/lib/erlang
+if [ $# == 1 ]; then
+	ROOT_DIR=$1
+	echo "installing faxien into alternate erlang $ROOT_DIR"
+elif [ -e $ROOT_DIR ]; then
+	echo "Erlang is installed at $ROOT_DIR. Installing here"
+else
+	echo "Usage: $0 [erlang_install_root_dir]"
+	exit 1
+fi
+
+touch $ROOT_DIR/permtest
+if [ $? != 0 ]; then
+	echo "Can't write to prefix. Please check that you have permissions."
+	exit 1
+fi
+rm $ROOT_DIR/permtest
+
+
+erl -version >& sdf
+ERTS_VSN=`cat sdf | awk '{print $6}' | sed -e "s;.$;;"`
+rm sdf
+echo "Found and targeting install for: erts-$ERTS_VSN"
+
+export ROOT_DIR=$(cd $ROOT_DIR; pwd)
+
+TMP_DIR=/tmp/faxien_tmp
+rm -rf $TMP_DIR
+mkdir $TMP_DIR
+
+# Take the TGZ portion of this file and pipe it to tar.
+tail -n +$SKIP $0 > $TMP_DIR/tmp.tar.gz
+cd $TMP_DIR
+tar -zxf tmp.tar.gz
+rm tmp.tar.gz
+FILES=`find . -type f | xargs grep '!ERTS_VSN!' | awk -F : '{print $1}'`
+for FILENAME in $FILES
+do
+	VARIABLE='!ERTS_VSN!'
+	VALUE=$ERTS_VSN
+	sed -e "s/$VARIABLE/$VALUE/" $FILENAME > "$FILENAME"_tmp
+	mv "$FILENAME"_tmp $FILENAME
+done
+cd releases
+cd `ls`
+erlc make_rel.erl
+erl -s make_rel make_rel -s init stop -noshell
+rm make_rel.erl make_rel.beam
+cd ../..
+chmod +x bin/*
+tar -zcf faxien.tar.gz bin lib releases
+cp -r faxien.tar.gz $ROOT_DIR
+cd $ROOT_DIR
+tar -zxf faxien.tar.gz
+
+if [ $? != 0 ]; then
+echo "Unable to untar bootstrap"
+exit 1
+fi
+
+echo ""
+echo "*** Faxien is now installed ***"
+echo ""
+echo "Checking repos for any upgrades"
+
+# execute the installation script
+wait && $ROOT_DIR/bin/faxien upgrade-release faxien
+
+if [ $? -eq 0 ]; then
+    echo
+    echo Faxien is now installed. You may wish to add $ROOT_DIR/bin to
+    echo your PATH so you can just type \'faxien\' at the command line.
+    echo
+    echo Run \"$ROOT_DIR/bin/faxien help\" to get started.
+fi
+
+exit 0
+
+__ARCHIVE_FOLLOWS__

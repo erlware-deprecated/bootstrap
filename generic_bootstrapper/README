@@ -1,0 +1,7 @@
+This is only for creating an arch neutral bootstrapper for use with system that already have Erlang itself installed.
+
+*Note* This bootstrapper does not create a full target system like the non-generic version.
+
+To create a new generic boostrapper fetch a full faxien release. 
+Alter each erts vsn string in the bin dir an the .rel file with !ERTS_VSN! 
+then make sure the make_script.erl object code is in the release directory.
