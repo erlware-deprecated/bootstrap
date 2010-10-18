@@ -2,37 +2,79 @@
 
 SKIP=`awk '/^__ARCHIVE_FOLLOWS__/ { print NR + 1; exit 0; }' $0`
 
-which erl
-if [ $? != 0 ]; then
+usage() 
+{
+	echo ""
+	echo "Usage: $0 [erlang_install_root_dir, [erts_dir]]"
+	echo ""
+	echo "This program can take up to 2 arguments. The first"
+	echo "the location into which you will install faxien."
+	echo "This location is typically the same place as where"
+	echo "you previously installed Erlang."
+	echo ""
+	echo "If you would like to install faxien into a new location"
+	echo "All by itself then you must provide the bootstrapper"
+	echo "the path to the directory containing the current runtime"
+	echo "system (ERTS). This directory should contain the same"
+	echo "version of ERTS that comes up when you run the erl shell"
+	echo ""
+	echo "Example: $0 /home/bob/install_erlang /usr/local/lib/erlang"
+}
+
+
+which erl >& /dev/null
+if [ ! $? = 0 ]; then
+	echo ""
 	echo "Can't find erl. Please make sure you have Erlang installed. See erlang.org for this"
 	exit 1
 fi
-
-ROOT_DIR=/usr/local/lib/erlang
-if [ $# == 1 ]; then
-	ROOT_DIR=$1
-	echo "Installing faxien into alternate Erlang root dir at: $ROOT_DIR"
-elif [ -e $ROOT_DIR ]; then
-	echo "Erlang is installed at $ROOT_DIR. Installing here"
-else
-	echo "Usage: $0 [erlang_install_root_dir]"
-	exit 1
-fi
-
-touch $ROOT_DIR/permtest
-if [ $? != 0 ]; then
-	echo "Can't write to prefix. Please check that you have permissions."
-	exit 1
-fi
-rm $ROOT_DIR/permtest
-
 
 erl -version >& sdf
 ERTS_VSN=`cat sdf | awk '{print $6}' | sed -e "s;.$;;"`
 rm sdf
 echo "Found and targeting install for: erts-$ERTS_VSN"
 
+ROOT_DIR=/usr/local/lib/erlang
+if [ $# = 1 ]; then
+	ROOT_DIR=$1
+	ERTS_DIR=$ROOT_DIR/erts-$ERTS_VSN
+	echo "Installing faxien into alternate Erlang root dir at: $ROOT_DIR"
+elif [ $# = 2 ]; then
+	ROOT_DIR=$1
+	ERTS_DIR=$2/erts-$ERTS_VSN
+elif [ -e $ROOT_DIR ]; then
+	ERTS_DIR=$ROOT_DIR/erts-$ERTS_VSN
+	echo "Erlang previously installed into $ROOT_DIR. Installing here"
+	echo "Proceed y or n?"
+	read P
+	if [ $P != y ]; then
+		echo "Aborting install"
+		exit 6
+	fi
+else
+	usage
+	exit 2
+fi
+
+mkdir -p $ROOT_DIR
+touch $ROOT_DIR/permtest
+if [ $? != 0 ]; then
+	echo ""
+	echo "Can't write to prefix. Please check that you have permissions."
+	exit 4
+fi
+rm $ROOT_DIR/permtest
+
+
 export ROOT_DIR=$(cd $ROOT_DIR; pwd)
+
+if [ ! -e $ERTS_DIR ];then 
+	echo ""
+	echo "Could not find the Erlang Runtime System (ERTS) at $ERTS_DIR"
+	usage
+	exit 3
+fi
+
 
 TMP_DIR=/tmp/faxien_tmp
 rm -rf $TMP_DIR
@@ -42,6 +84,8 @@ mkdir $TMP_DIR
 tail -n +$SKIP $0 > $TMP_DIR/tmp.tar.gz
 cd $TMP_DIR
 tar -zxf tmp.tar.gz
+echo "Copying $ERTS_DIR to staging area at `pwd`"
+cp -r $ERTS_DIR .
 rm tmp.tar.gz
 FILES=`find . -type f | xargs grep '!ERTS_VSN!' | awk -F : '{print $1}'`
 for FILENAME in $FILES
@@ -58,14 +102,14 @@ erl -s make_rel make_rel -s init stop -noshell
 rm make_rel.erl make_rel.beam
 cd ../..
 chmod +x bin/*
-tar -zcf faxien.tar.gz bin lib releases
+tar -zcf faxien.tar.gz bin lib releases erts-$ERTS_VSN
 cp -r faxien.tar.gz $ROOT_DIR
 cd $ROOT_DIR
 tar -zxf faxien.tar.gz
 
 if [ $? != 0 ]; then
 echo "Unable to untar bootstrap"
-exit 1
+exit 5
 fi
 
 echo ""
