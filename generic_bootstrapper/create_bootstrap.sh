@@ -1,6 +1,6 @@
 #!/bin/sh
 
-VSN="V2"
+VSN="V3"
 FILENAME=faxien-piggyback-launcher-$VSN.sh
 
 cat header.txt > $FILENAME

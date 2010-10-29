@@ -22,16 +22,14 @@ usage()
 }
 
 
-which erl >& /dev/null
+which erl > /dev/null
 if [ ! $? = 0 ]; then
 	echo ""
 	echo "Can't find erl. Please make sure you have Erlang installed. See erlang.org for this"
 	exit 1
 fi
 
-erl -version >& sdf
-ERTS_VSN=`cat sdf | awk '{print $6}' | sed -e "s;.$;;"`
-rm sdf
+ERTS_VSN=`erl -version 2>&1 | awk '{print $6}' | sed -e "s;.$;;"`
 echo "Found and targeting install for: erts-$ERTS_VSN"
 
 ROOT_DIR=/usr/local/lib/erlang
